@@ -1,0 +1,62 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_install().
+ */
+function aat_note_install() {
+  // Use schema API to create database table.
+  drupal_install_schema('aat_note');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function aat_note_uninstall() {
+  // Use schema API to delete database table.
+  drupal_uninstall_schema('aat_note');
+  // Delete our module's variable from the variables table.
+  variable_del('aat_note_node_types');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function aat_note_schema() {
+  $schema['annotations'] = array(
+    'description' => t('Stores node annotations that users write.'),
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node}.nid to which the annotation applies.'),
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {user}.uid of the user who created the annotation.')
+      ),
+      'note' => array(
+        'description' => t('The text of the annotation.'),
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'big'
+      ),
+      'created' => array(
+        'description' => t('A Unix timestamp indicating when the annotation was created.'),
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+      ),
+    ),
+    'primary key' => array(
+      'nid', 'uid'
+    ),
+  );
+
+  return $schema;
+}
