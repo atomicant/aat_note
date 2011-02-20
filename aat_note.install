@@ -23,7 +23,8 @@ function aat_note_uninstall() {
  * Implementation of hook_schema().
  */
 function aat_note_schema() {
-  $schema['annotations'] = array(
+  $schema = array();
+  $schema['aat_note'] = array(
     'description' => t('Stores node annotations that users write.'),
     'fields' => array(
       'nid' => array(

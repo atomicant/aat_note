@@ -18,7 +18,7 @@
 function aat_note_menu() {
   $items = array();
 
-  $items['admin/settings/aat_note'] = array(
+  $items['admin/settings/aat-note'] = array(
     'title' => 'Annotation settings',
     'description' => 'Change how annotations behave',
     'page callback' => 'drupal_get_form',
@@ -28,7 +28,54 @@ function aat_note_menu() {
     'file' => 'aat_note.admin.inc',
   );
 
+  $items['user/%user/aat-notes'] = array(
+    'title' => 'My notes',
+    'description' => 'View my notes.',
+    'page callback' => 'aat_note_user_notes',
+    'page arguments' => array(1),
+    'access callback' => 'aat_note_check_access',
+    'access arguments' => array('view', 1),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'aat_note.admin.inc',
+  );
+
   return $items;
+}
+
+/**
+ * Access helper function
+ * @param type $action
+ * @param type $account
+ * @param type $note
+ *
+ * @return boolean
+ */
+function aat_note_check_access($action, $account, $note = NULL) {
+  global $user;
+  $access = FALSE;
+
+  switch ($action) {
+    case 'view':
+      if (user_access('view all aat-notes')) {
+        $access = TRUE;
+      }
+      elseif (!is_null($note) && user_access('view own aat-notes')) {
+        $access = $account->uid == $note->uid;
+      }
+    default:
+  }
+
+  return $access;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function aat_note_perm() {
+  return array(
+    'view own aat-notes',
+    'view all aat-notes',
+  );
 }
 
 /**
@@ -55,7 +102,7 @@ function aat_note_nodeapi(&$node, $op, $teaser, $page) {
 
       // Get the current annotation for this node from the database
       // and store it in the node object.
-      $result = db_query('SELECT note FROM {annotations} WHERE nid = %d AND uid = %d', $node->nid, $user->uid);
+      $result = db_query('SELECT note FROM {aat_note} WHERE nid = %d AND uid = %d', $node->nid, $user->uid);
       $node->annotation = db_result($result);
 
       // Add our form as a content item.
@@ -66,7 +113,7 @@ function aat_note_nodeapi(&$node, $op, $teaser, $page) {
       break;
 
     case 'delete':
-      db_query('DELETE FROM {annotations} WHERE nid = %d', $node->nid);
+      db_query('DELETE FROM {aat_note} WHERE nid = %d', $node->nid);
       break;
   }
 }
@@ -75,6 +122,7 @@ function aat_note_nodeapi(&$node, $op, $teaser, $page) {
  * Define the form for entering an annotation.
  */
 function aat_note_entry_form($form_state, $node) {
+  $form = array();
   // Define a fieldset.
   $form['aat_note'] = array(
     '#type' => 'fieldset',
@@ -113,7 +161,7 @@ function aat_note_entry_form_submit($form, $form_state) {
   $note = $form_state['values']['note'];
   $nid = $form_state['values']['nid'];
 
-  db_query('DELETE FROM {annotations} WHERE nid = %d AND uid = %d', $nid, $user->uid);
-  db_query("INSERT INTO {annotations} (nid, uid, note, created) VALUES (%d, %d, '%s', %d)", $nid, $user->uid, $note, time());
+  db_query('DELETE FROM {aat_note} WHERE nid = %d AND uid = %d', $nid, $user->uid);
+  db_query("INSERT INTO {aat_note} (nid, uid, note, created) VALUES (%d, %d, '%s', %d)", $nid, $user->uid, $note, time());
   drupal_set_message(t('Your annotation has been saved.'));
 }

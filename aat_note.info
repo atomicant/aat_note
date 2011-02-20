@@ -1,5 +1,5 @@
 ; $Id$
 name = Sticky Notes
-description = Allows users to aat_note nodes.
+description = Allows users to annotate nodes.
 core = 6.x
 package = AtomicAnt Trainings
