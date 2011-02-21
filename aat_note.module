@@ -125,7 +125,7 @@ function aat_note_nodeapi(&$node, $op, $teaser, $page) {
       // Abort if the user is an anonymous user (not logged in) or
       // if the node is not being displayed on a page by itself
       // (for example, it could be in a node listing or search result).
-      if (!$page || $user->uid == 0 || user_access('view own aat-notes')) {
+      if (!$page || $user->uid == 0 || !user_access('view own aat-notes')) {
         break;
       }
       // Find out which node types we should aat_note.
