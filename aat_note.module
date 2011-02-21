@@ -222,8 +222,9 @@ function aat_note_theme() {
 /**
  * Preprocess function for aat-note-my-notes.tpl.php
  */
-function aat_note_preprocess_aat_note_my_notes(&$vars) {
+function template_preprocess_aat_note_my_notes(&$vars) {
   $vars['notes'] = theme('item_list', $vars['items']);
   $vars['delete_link'] = l('Delete all', 'user/'. $vars['account']->uid .'/aat-notes/delete');
+  $vars['template_files'][] = 'aat-note-my-notes-'. $vars['account']->uid;
 }
 
