@@ -201,3 +201,29 @@ function aat_note_entry_form_submit($form, $form_state) {
   db_query("INSERT INTO {aat_note} (nid, uid, note, created) VALUES (%d, %d, '%s', %d)", $nid, $user->uid, $note, time());
   drupal_set_message(t('Your annotation has been saved.'));
 }
+
+/**
+ * Implementation of hook_theme().
+ */
+function aat_note_theme() {
+  return array(
+    'aat_note_my_notes' => array(
+      'arguments' => array('items' => NULL, 'account' => NULL), 
+      'template' => 'aat-note-my-notes',
+      'path' => drupal_get_path('module', 'aat_note') .'/templates',
+    ),
+    'aat_note_entry_form' => array(
+      'arguments' => array('form' => NULL), 
+      'file' => 'aat_note.theme.inc',
+    ),
+  );
+}
+
+/**
+ * Preprocess function for aat-note-my-notes.tpl.php
+ */
+function aat_note_preprocess_aat_note_my_notes(&$vars) {
+  $vars['notes'] = theme('item_list', $vars['items']);
+  $vars['delete_link'] = l('Delete all', 'user/'. $vars['account']->uid .'/aat-notes/delete');
+}
+

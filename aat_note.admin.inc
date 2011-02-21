@@ -46,8 +46,7 @@ function aat_note_user_notes($account) {
     $items[] = l($note->title, 'node/' . $note->nid) . ' : ' . check_plain($note->note);
   }
   if (count($items)) {
-    $output .= theme('item_list', $items);
-    $output .= l('Delete all', 'user/'. $account->uid .'/aat-notes/delete');
+    $output = theme('aat_note_my_notes', $items, $account);
   }
   return $output;
 }
