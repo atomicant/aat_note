@@ -39,11 +39,23 @@ function aat_note_menu() {
     'file' => 'aat_note.admin.inc',
   );
 
+  $items['user/%user/aat-notes/delete'] = array(
+    'title' => 'Delete notes',
+    'description' => 'Delete all notes for given user.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('aat_note_user_notes_delete', 1),
+    'access callback' => 'aat_note_check_access',
+    'access arguments' => array('delete', 1),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'aat_note.admin.inc',
+  );
+
   return $items;
 }
 
 /**
  * Access helper function
+ *
  * @param type $action
  * @param type $account
  * @param type $note
@@ -56,12 +68,34 @@ function aat_note_check_access($action, $account, $note = NULL) {
 
   switch ($action) {
     case 'view':
+      // administrator site-wide permission
       if (user_access('view all aat-notes')) {
         $access = TRUE;
       }
+      // author permission for specific note
       elseif (!is_null($note) && user_access('view own aat-notes')) {
         $access = $account->uid == $note->uid;
       }
+      // author permission
+      elseif (user_access('view own aat-notes')) {
+        $access = $account->uid == $user->uid;
+      }
+      break;
+    case 'delete':
+      // administrator site-wide permission
+      if (user_access('delete all aat-notes')) {
+        $access = TRUE;
+      }
+      // author permission for specific note
+      elseif (!is_null($note) && user_access('delete own aat-notes')) {
+        $access = $account->uid == $note->uid;
+      }
+      // author permission
+      elseif (user_access('delete own aat-notes')) {
+        $access = $account->uid == $user->uid;
+      }
+      break;
+
     default:
   }
 
