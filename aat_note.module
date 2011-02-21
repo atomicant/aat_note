@@ -109,6 +109,8 @@ function aat_note_perm() {
   return array(
     'view own aat-notes',
     'view all aat-notes',
+    'delete own aat-notes',
+    'delete all aat-notes',
   );
 }
 
